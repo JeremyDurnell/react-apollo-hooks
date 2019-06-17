@@ -3,21 +3,20 @@
 Use [Apollo Client](https://github.com/apollographql/apollo-client) as React
 [hooks](https://reactjs.org/docs/hooks-intro.html).
 
-[![CircleCI](https://circleci.com/gh/trojanowski/react-apollo-hooks.svg?style=svg)](https://circleci.com/gh/trojanowski/react-apollo-hooks)
-
 # Installation
 
-`npm install react-apollo-hooks`
+`npm install @jeremydurnell/react-apollo-hooks`
 
 Or if using [yarn](https://yarnpkg.com/en/)
 
-
-`yarn add react-apollo-hooks`
+`yarn add @jeremydurnell/react-apollo-hooks`
 
 # Example
 
 <https://codesandbox.io/s/8819w85jn9> is a port of Pupstagram sample app to
 react-apollo-hooks.
+
+> NOTE: This example is outdated and may not work properly. Support for React Suspense was removed in version 0.4.6 of this package.
 
 # API
 
@@ -112,57 +111,6 @@ const Dogs = () => {
 };
 
 ```
-
-### Usage with Suspense (experimental)
-
-You can use `useQuery` with [React Suspense](https://www.youtube.com/watch?v=6g3g0Q_XVb4)
-with the `{ suspend: true }` option.
-Please note that it's not yet recommended to use it in production. Please look
-at the [issue #69](https://github.com/trojanowski/react-apollo-hooks/issues/69)
-for details.
-
-Example usage:
-
-```javascript
-import gql from 'graphql-tag';
-import React, { Suspense } from 'react';
-import { useQuery } from 'react-apollo-hooks';
-
-const GET_DOGS = gql`
-  {
-    dogs {
-      id
-      breed
-    }
-  }
-`;
-
-const Dogs = () => {
-  const { data, error } = useQuery(GET_DOGS, { suspend: true });
-  if (error) {
-    return <div>Error! {error.message}</div>;
-  }
-
-  return (
-    <ul>
-      {data.dogs.map(dog => (
-        <li key={dog.id}>{dog.breed}</li>
-      ))}
-    </ul>
-  );
-};
-
-const MyComponent = () => (
-  <Suspense fallback={<div>Loading...</div>}>
-    <Dogs />
-  </Suspense>
-);
-```
-
-There are known issues with suspense mode for `useQuery`:
-
-* only the `cache-first` fetch policy is supported ([#13](https://github.com/trojanowski/react-apollo-hooks/issues/13))
-* `networkStatus` returned by `useQuery` is undefined ([#68](https://github.com/trojanowski/react-apollo-hooks/pull/68))
 
 ## useMutation
 
@@ -336,21 +284,4 @@ app.get('/', async (req, res) => {
 });
 ```
 
-`getMarkupFromTree` supports `useQuery` hooks invoked in both suspense
-and non-suspense mode, but the [React.Suspense](https://reactjs.org/docs/react-api.html#reactsuspense)
-component is not supported. You can use `unstable_SuspenseSSR` provided
-by this library instead:
 
-```javascript
-import { unstable_SuspenseSSR as UnstableSuspenseSSR } from 'react-apollo-hooks';
-
-function MyComponent() {
-  return (
-    <UnstableSuspenseSSR fallback={<Spinner />}>
-      <div>
-        <ComponentWithGraphqlQuery />
-      </div>
-    </UnstableSuspenseSSR>
-  );
-}
-```
